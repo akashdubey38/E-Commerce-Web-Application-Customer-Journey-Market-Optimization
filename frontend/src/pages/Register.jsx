@@ -9,7 +9,7 @@ function Register(){
 
   const handleRegister = async (e)=>{
     e.preventDefault()
-    const res = await fetch("http://localhost:5000/api/auth/register",{
+    const res = await fetch("https://e-commerce-web-application-0wdy.onrender.com/api/auth/register",{
       method:"POST",
       headers:{"Content-Type":"application/json"},
       body: JSON.stringify({name,email,password})
@@ -23,16 +23,17 @@ function Register(){
     }
   }
 
-  return(
-    <div style={{maxWidth:"400px", margin:"50px auto"}}>
-      <h2>Register</h2>
-      <form onSubmit={handleRegister}>
-        <input style={{width:"100%", padding:"10px", margin:"10px 0"}} placeholder="Name" onChange={e=>setName(e.target.value)} />
-        <input style={{width:"100%", padding:"10px", margin:"10px 0"}} placeholder="Email" onChange={e=>setEmail(e.target.value)} />
-        <input style={{width:"100%", padding:"10px", margin:"10px 0"}} type="password" placeholder="Password" onChange={e=>setPassword(e.target.value)} />
-        <button style={{width:"100%", padding:"10px", background:"green", color:"white", border:"none"}}>Register</button>
+  return (
+    <div className="flex justify-center items-center h-screen">
+      <form onSubmit={handleRegister} className="bg-white p-8 rounded shadow-md w-96">
+        <h2 className="text-2xl font-bold mb-4">Register</h2>
+        <input type="text" placeholder="Name" value={name} onChange={(e)=>setName(e.target.value)} className="w-full p-2 border mb-3" required />
+        <input type="email" placeholder="Email" value={email} onChange={(e)=>setEmail(e.target.value)} className="w-full p-2 border mb-3" required />
+        <input type="password" placeholder="Password" value={password} onChange={(e)=>setPassword(e.target.value)} className="w-full p-2 border mb-3" required />
+        <button type="submit" className="w-full bg-black text-white p-2">Register</button>
       </form>
     </div>
   )
 }
+
 export default Register
