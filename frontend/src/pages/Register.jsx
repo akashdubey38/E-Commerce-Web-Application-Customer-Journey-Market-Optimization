@@ -1,5 +1,5 @@
  import { useState } from "react"
-import { useNavigate } from "react-router-dom"
+import { useNavigate, Link } from "react-router-dom"
 
 function Register(){
   const [name,setName]=useState("")
@@ -15,25 +15,32 @@ function Register(){
       body: JSON.stringify({name,email,password})
     })
     const data = await res.json()
-    if(data.message){
-      alert("Registered! Ab Login karo")
+    if(res.ok){
+      alert("Registered Successfully!")
       navigate("/login")
     } else {
-      alert(data.error)
+      alert(data.error || "Failed")
     }
   }
 
   return (
-    <div className="flex justify-center items-center h-screen">
-      <form onSubmit={handleRegister} className="bg-white p-8 rounded shadow-md w-96">
-        <h2 className="text-2xl font-bold mb-4">Register</h2>
-        <input type="text" placeholder="Name" value={name} onChange={(e)=>setName(e.target.value)} className="w-full p-2 border mb-3" required />
-        <input type="email" placeholder="Email" value={email} onChange={(e)=>setEmail(e.target.value)} className="w-full p-2 border mb-3" required />
-        <input type="password" placeholder="Password" value={password} onChange={(e)=>setPassword(e.target.value)} className="w-full p-2 border mb-3" required />
-        <button type="submit" className="w-full bg-black text-white p-2">Register</button>
-      </form>
+    <div className="min-h-[90vh] flex items-center justify-center bg-gradient-to-br from-blue-100 to-indigo-200 px-4">
+      <div className="bg-white p-8 rounded-2xl shadow-2xl w-full max-w-md">
+        <h2 className="text-3xl font-bold text-center text-blue-700 mb-2">Akash Store</h2>
+        <p className="text-center text-gray-500 mb-6">Create your account</p>
+
+        <form onSubmit={handleRegister} className="flex flex-col gap-4">
+          <input className="border border-gray-300 p-3 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="Full Name" value={name} onChange={(e)=>setName(e.target.value)} required />
+          <input className="border border-gray-300 p-3 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="Email Address" type="email" value={email} onChange={(e)=>setEmail(e.target.value)} required />
+          <input className="border border-gray-300 p-3 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="Password" type="password" value={password} onChange={(e)=>setPassword(e.target.value)} required />
+          <button className="bg-blue-600 hover:bg-blue-700 text-white font-semibold p-3 rounded-lg transition-all duration-200 mt-2">Register</button>
+        </form>
+
+        <p className="text-center text-sm text-gray-600 mt-6">
+          Already have an account? <Link to="/login" className="text-blue-600 font-semibold hover:underline">Login</Link>
+        </p>
+      </div>
     </div>
   )
 }
-
 export default Register
