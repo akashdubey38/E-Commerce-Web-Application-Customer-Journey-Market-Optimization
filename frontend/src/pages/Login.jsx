@@ -1,39 +1,39 @@
  import { useState } from "react"
 import { useNavigate, Link } from "react-router-dom"
 
-function Register(){
-  const [name,setName]=useState("")
+function Login(){
   const [email,setEmail]=useState("")
   const [password,setPassword]=useState("")
   const navigate = useNavigate()
 
-  const handleRegister = async (e)=>{
+  const handleLogin = async (e)=>{
     e.preventDefault()
-    const res = await fetch("https://e-commerce-backend-akash38.onrender.com/api/auth/register",{
+    const res = await fetch("https://e-commerce-backend-akash38.onrender.com/api/auth/login",{
       method:"POST",
       headers:{"Content-Type":"application/json"},
-      body: JSON.stringify({name,email,password})
+      body: JSON.stringify({email,password})
     })
     const data = await res.json()
-    if(data.token || data.message){
-      alert("Register Success! Please Login")
-      navigate("/login")
+    if(data.token){
+      localStorage.setItem("token", data.token)
+      alert("Login Success!")
+      navigate("/")
     } else {
-      alert(data.error || "Register failed")
+      alert(data.error || "Login failed")
     }
   }
 
   return (
-    <div>
-      <h2>Register</h2>
-      <form onSubmit={handleRegister}>
-        <input type="text" value={name} onChange={e=>setName(e.target.value)} placeholder="Name" required />
-        <input type="email" value={email} onChange={e=>setEmail(e.target.value)} placeholder="Email" required />
-        <input type="password" value={password} onChange={e=>setPassword(e.target.value)} placeholder="Password" required />
-        <button type="submit">Register</button>
-      </form>
-      <p>Already have account? <Link to="/login">Login</Link></p>
+    <div className="min-h-[90vh] flex items-center justify-center">
+      <div className="bg-white p-8 rounded-2xl shadow-2xl w-full max-w-md">
+        <h2 className="text-2xl font-bold mb-4">Login</h2>
+        <form onSubmit={handleLogin} className="flex flex-col gap-3">
+          <input className="border p-2 rounded" value={email} onChange={e=>setEmail(e.target.value)} placeholder="Email" type="email" required />
+          <input className="border p-2 rounded" value={password} onChange={e=>setPassword(e.target.value)} placeholder="Password" type="password" required />
+          <button className="bg-blue-600 text-white p-2 rounded" type="submit">Login</button>
+        </form>
+      </div>
     </div>
   )
 }
-export default Register
+export default Login
