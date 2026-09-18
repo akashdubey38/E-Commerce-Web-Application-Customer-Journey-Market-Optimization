@@ -1,36 +1,40 @@
- require('dotenv').config();
-const express = require('express');
-const mongoose = require('mongoose');
-const cors = require('cors');
+ import express from "express";
+import mongoose from "mongoose";
+import dotenv from "dotenv";
+import cors from "cors";
+import paymentRoutes from "./routes/payment.js";
+
+dotenv.config();
 
 const app = express();
 
-// CORS - Vercel ke liye fixed
+// CORS - Fix for Failed to fetch
 app.use(cors({
-  origin: "*",
-  methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
-  allowedHeaders: ["Content-Type", "Authorization"]
+  origin: "http://localhost:5173",
+  credentials: true
 }));
-
 app.use(express.json());
 
-// MongoDB connect
-mongoose.connect(process.env.MONGO_URI || 'mongodb://127.0.0.1:27017/ecommerce')
-.then(()=> console.log("MongoDB Connected"))
-.catch(err => console.log(err));
-
 // Routes
-const authRoutes = require('./routes/auth');
-app.use('/api/auth', authRoutes);
-
-const productRoutes = require('./routes/product');
-app.use('/api/products', productRoutes);
+app.use("/api/payment", paymentRoutes);
 
 app.get("/", (req, res) => {
-  res.send("E-commerce API Running - Akash");
+  res.send("API Running - Payment route active");
 });
 
-const PORT = process.env.PORT || 5000;
-app.listen(PORT, () => {
-  console.log(`Backend chal gaya ${PORT} pe`);
-});
+const PORT = 5000;
+
+mongoose.connect(process.env.MONGO_URI)
+  .then(() => {
+    console.log("MongoDB Connected");
+    app.listen(PORT, () => {
+      console.log(`Server running on port ${PORT}`);
+    });
+  })
+  .catch((err) => {
+    console.log("MongoDB Error:", err.message);
+    // Agar DB bhi fail ho to bhi server chalao taaki payment test ho jaye
+    app.listen(PORT, () => {
+      console.log(`Server running WITHOUT DB on port ${PORT}`);
+    });
+  });

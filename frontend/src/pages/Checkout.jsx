@@ -1,81 +1,59 @@
- import React, { useState } from "react";
-import { useCart } from "../context/CartContext";
+ import React from 'react';
 
-function Checkout() {
-  const { cartItems } = useCart();
-  const [address, setAddress] = useState({
-    fullName: "",
-    phone: "",
-    address: "",
-    city: "",
-    pincode: ""
-  });
+const Checkout = () => {
 
-  const handleChange = (e) => {
-    setAddress({ ...address, [e.target.name]: e.target.value });
-  };
+  const handlePayment = async () => {
+    // 1. Backend se order banao
+    const res = await fetch("http://localhost:5000/api/payment/create-order", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ amount: 1 }) // 1 Rupee test payment
+    });
 
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    console.log("Order Placed:", address, cartItems);
-    alert("Order Placed Successfully!");
+    const data = await res.json();
+    console.log(data);
+
+    // 2. Razorpay options
+    const options = {
+      key: "rzp_test_TdUrNgXplmKkia", // Tera Test Key
+      amount: data.amount,
+      currency: "INR",
+      name: "Akash Store",
+      description: "Test Transaction",
+      order_id: data.id,
+
+      // YE FIX HAI - Isse mobile number ka error nahi aayega
+      prefill: {
+        name: "Akash",
+        email: "akash@gmail.com",
+        contact: "9876543210"
+      },
+
+      handler: function (response) {
+        alert("Payment Success! Payment ID: " + response.razorpay_payment_id);
+        console.log(response);
+      },
+      
+      theme: {
+        color: "#3399cc"
+      }
+    };
+
+    const rzp1 = new window.Razorpay(options);
+    rzp1.open();
   };
 
   return (
-    <div style={{ maxWidth: "500px", margin: "50px auto", padding: "20px", border: "1px solid #ddd", borderRadius: "10px" }}>
-      <h2>Checkout</h2>
-      <form onSubmit={handleSubmit}>
-        <input
-          type="text"
-          name="fullName"
-          placeholder="Full Name"
-          onChange={handleChange}
-          required
-          style={{ width: "100%", padding: "10px", marginBottom: "15px", marginTop: "5px" }}
-        />
-        <input
-          type="text"
-          name="phone"
-          placeholder="Phone Number"
-          onChange={handleChange}
-          required
-          style={{ width: "100%", padding: "10px", marginBottom: "15px", marginTop: "5px" }}
-        />
-        <input
-          type="text"
-          name="address"
-          placeholder="Enter your full address, City, State, Pincode"
-          onChange={handleChange}
-          required
-          style={{ width: "100%", padding: "10px", marginBottom: "15px", marginTop: "5px" }}
-        />
-        <div style={{ display: "flex", gap: "10px" }}>
-          <input
-            type="text"
-            name="city"
-            placeholder="City"
-            onChange={handleChange}
-            required
-            style={{ width: "50%", padding: "10px", marginBottom: "15px" }}
-          />
-          <input
-            type="text"
-            name="pincode"
-            placeholder="Pincode"
-            onChange={handleChange}
-            required
-            style={{ width: "50%", padding: "10px", marginBottom: "15px" }}
-          />
-        </div>
-        <button
-          type="submit"
-          style={{ width: "100%", padding: "12px", background: "black", color: "white", cursor: "pointer", border: "none", borderRadius: "5px" }}
-        >
-          Pay Now & Place Order
-        </button>
-      </form>
+    <div style={{ padding: '50px', textAlign: 'center' }}>
+      <h2>Cart Total: ₹1</h2>
+      <button 
+        onClick={handlePayment}
+        style={{ padding: '15px 30px', background: 'black', color: 'white', fontSize: '18px', cursor: 'pointer', borderRadius: '8px' }}
+      >
+        Pay Now
+      </button>
     </div>
   );
-}
+};
 
 export default Checkout;
